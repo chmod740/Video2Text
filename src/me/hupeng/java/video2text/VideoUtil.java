@@ -9,8 +9,10 @@ import java.util.List;
 
 /**
  * Created by HUPENG on 2017/4/3.
+ * @author HUPENG
+ * 视频文件处理类
  */
-public class AudioUtil {
+public class VideoUtil{
     private List<String> runShell(String cmd){
         Process process = null;
         List<String> processList = new ArrayList<String>();
@@ -36,7 +38,10 @@ public class AudioUtil {
     }
 
 
-
+    /**
+     * 利用ffmpeg将视频文件转化成音频文件
+     * @param videoPath     视频文件的路径
+     * */
     private void convertVideoToAudio(String videoPath){
         File file = new File("tmp");
         if (!file.exists()){
@@ -49,6 +54,6 @@ public class AudioUtil {
     }
 
     public static void main(String[] args){
-        new AudioUtil().convertVideoToAudio("d:\\test\\2.mp4");
+        new VideoUtil().convertVideoToAudio("d:\\test\\2.mp4");
     }
 }
