@@ -15,7 +15,7 @@ public class VideoUtil{
     /**
      * 默认的ffmpeg.exe的文件存储位置
      * */
-    private String ffmpegPath = "./ffmpeg/bin/ffmpeg.exe";
+    private String ffmpegPath = ".\\ffmpeg\\bin\\ffmpeg.exe";
 
     /**
      * 默认分割的视频长度<br>
@@ -29,18 +29,17 @@ public class VideoUtil{
     public VideoUtil(){}
 
 
-    /**
-     * 含参数的构造函数
-     * 初始化ffmpeg的路径
-     * */
-    public VideoUtil(String ffmpegPath){
-        setFfmpegPath(ffmpegPath);
-    }
-
-    private void setFfmpegPath(String ffmpegPath){
+    public void setFfmpegPath(String ffmpegPath){
         this.ffmpegPath = ffmpegPath;
     }
 
+    public void setVideoSplitLength(int videoSplitLength){
+        this.videoSplitLength = videoSplitLength;
+    }
+
+    /**
+     * 运行命令行，并返回结果
+     * */
     private List<String> runShell(String cmd){
         Process process = null;
         List<String> processList = new ArrayList<String>();
@@ -63,75 +62,104 @@ public class VideoUtil{
 
     public String videoToText(String videoPath) {
         //TODO:
-//        convertVideoToAudio(videoPath);
+
         return null;
     }
 
 
     /**
      * 利用ffmpeg将视频文件转化成音频文件
-     * @param videoPath     视频文件的路径
+     * @param inFile        视频文件的名称
+     * @param outFile       输出文件的名称
      * @return true         转换成功
      *          false        转换失败
      * */
-    private boolean convertVideoToAudio(String videoPath, String outPath){
-        //TODO:
+    private boolean convertVideoToMP3Audio(String inFile, String outFile){
+        convertVideoToMP3Audio("d:\\tmp", inFile,outFile);
         return false;
     }
 
 
-    private boolean convertVideoToAudio(String dir, String inFile, String outFile){
-        //TODO:
+    private boolean convertVideoToMP3Audio(String dir, String inFile, String outFile){
         File file = new File(dir);
         if (!file.exists()){
             file.mkdirs();
         }
         dir = dir.replace("/", "\\");
-
-        List<String> list = runShell("./ffmpeg/bin/ffmpeg.exe -i " +
-                dir + inFile +
-                "  -f s16be -ar 8000 -acodec pcm_s16be -vn  -ac 1 .\\tmp\\audio.pcm");
-//        for(String s: list){
-//            System.out.println(s);
-//        }
-        file = new File("./tmp/audio.pcm");
-        return file.exists();
-
-    }
-
-    /**
-     * 对于音频文件进行分割
-     * @param audioPath     音频文件的路径
-     * */
-    private boolean audioSplit(String audioPath){
-        //TODO:
-        File file = new File(audioPath);
-        if (!file.exists()){
-            return false;
+        if (!dir.endsWith("\\")){
+            dir += "\\";
         }
-        String shell = "";
-        return false;
+
+        List<String> list = runShell( "cmd /c "+
+                ffmpegPath +
+                " -i " +
+                dir + inFile +
+                "  -f mp3 " + dir + outFile + " -y" +
+                " >nul 2>nul");
+        file = new File(dir + outFile);
+        return file.exists();
     }
 
 
     /**
      * 对于视频文件进行分割
+     * .\ffmpeg.exe  -ss 0 -i d:\tmp\1.mp3 -t 60  -f s16be -ar 8000 -acodec pcm_s16be -vn  -ac 1 d:\tmp\audio_1.pcm
      * */
-    private boolean videoSplit(String videoPath){
+    private List<String> videoOrAudioSplit(String dir,String inFile){
         //TODO:
-        File file = new File(videoPath);
-        if (!file.exists()){
-            return false;
-        }
-        int videoTime = getVideoTime(videoPath);
 
-        for (int i = 0 ; i < videoTime-videoSplitLength ; i=i+videoSplitLength){
-            System.err.println("start:" + i + " end:" + (i + videoSplitLength));
+        dir = dir.replace("/", "\\");
+        if (!dir.endsWith("\\")){
+            dir += "\\";
         }
-        System.err.println("start:" + ((videoTime-1)/videoSplitLength)*videoSplitLength + " end:" + videoTime);
+
+        File file = new File(dir + inFile);
+        if (!file.exists()){
+            return null;
+        }
+
+        int videoTime = getVideoOrAudioTime(dir + inFile);
+        List<String> list = new ArrayList<>();
+        int j = 0;
+        for (int i = 0 ; i < videoTime-videoSplitLength ; j++, i=i+videoSplitLength){
+            runShell("cmd /c "+
+                    ffmpegPath +
+                    " -ss " +
+                    i +
+                    " -i "+
+                    dir +
+                    inFile +
+                    " -t " +
+                    videoSplitLength +
+                    "  -f s16be -ar 8000 -acodec pcm_s16be -vn  -ac 1 " +
+                    dir +
+                    "audio_" +
+                    j +
+                    ".pcm -y"
+            );
+//            System.err.println("start:" + i + " end:" + (i + videoSplitLength));
+            list.add("d:\\tmp\\audio_" + j + ".pcm");
+        }
+        runShell("cmd /c "+
+                ffmpegPath +
+                " -ss " +
+                ((videoTime-1)/videoSplitLength)*videoSplitLength +
+                " -i "+
+                dir +
+                inFile +
+                " -t " +
+                videoSplitLength +
+                "  -f s16be -ar 8000 -acodec pcm_s16be -vn  -ac 1 " +
+                dir +
+                "audio_" +
+                j +
+                ".pcm -y"
+        );
+//        System.err.println("start:" + ((videoTime-1)/videoSplitLength)*videoSplitLength + " end:" + videoTime);
         String shell = "";
-        return false;
+        return list;
     }
+
 
 
     /**
@@ -139,7 +167,7 @@ public class VideoUtil{
      * @param videoPath    视频路径
      * @return
      */
-    private int getVideoTime(String videoPath) {
+    private int getVideoOrAudioTime(String videoPath) {
         List<String> commands = new java.util.ArrayList<String>();
         commands.add(ffmpegPath);
         commands.add("-i");
@@ -194,9 +222,10 @@ public class VideoUtil{
 
 
     public static void main(String[] args){
-//        new VideoUtil().videoSplit("d:\\tmp\\1.mp4");
-        String s = "1234";
-        System.err.println(s.endsWith("134"));
+       List<String> list  = new VideoUtil().videoOrAudioSplit("d:\\tmp\\","2.mp3");
+        for (String i: list) {
+            System.err.println(i);
+        }
     }
 }
 
