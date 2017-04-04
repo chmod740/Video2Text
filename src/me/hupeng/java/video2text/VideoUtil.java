@@ -3,10 +3,7 @@ package me.hupeng.java.video2text;
 import com.baidu.speech.serviceapi.BaiduVoice;
 
 import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -102,27 +99,36 @@ public class VideoUtil{
      * */
     public String videoToText(String videoPath) {
         //TODO:
+        File tempDirFile = new File(tempDir);
+        if (!tempDirFile.exists()){
+            tempDirFile.mkdirs();
+        }
         // 复制到临时目录下
         String targetFile = tempDir + "video.mp4";
         boolean result = copyFile(videoPath,targetFile,true);
         if (!result){
             return null;
         }
-        result = convertVideoToMP3Audio("video.mp4","audio.mp3");
-        if (!result){
-            return null;
+        File audioFile = new File(tempDir + "audio.mp3");
+        if (!audioFile.exists()){
+            result = convertVideoToMP3Audio("video.mp4","audio.mp3");
+            if (!result){
+                return null;
+            }
         }
-        List<String> list  = new VideoUtil().videoOrAudioSplit(tempDir, "audio.mp3");
+
+        List<String> list  = videoOrAudioSplit(tempDir, "audio.mp3");
+        String text = "";
         for (String i: list) {
             System.err.println(i);
             try {
-                String text = BaiduVoice.audioToText(i);
-                System.out.println(text);
+                String s = BaiduVoice.audioToText(i);
+                text += (s==null?"":s);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return null;
+        return text;
     }
 
     /**
@@ -136,8 +142,7 @@ public class VideoUtil{
      *                  false：转换失败
      * */
     private boolean convertVideoToMP3Audio(String inFile, String outFile){
-        convertVideoToMP3Audio(tempDir, inFile,outFile);
-        return false;
+        return convertVideoToMP3Audio(tempDir, inFile,outFile);
     }
 
     /**
@@ -367,23 +372,4 @@ public class VideoUtil{
         return min;
     }
 
-
-    public static void main(String[] args){
-//        new VideoUtil().convertVideoToMP3Audio("4.mp4","4.mp3");
-//       List<String> list  = new VideoUtil().videoOrAudioSplit("d:\\tmp\\","4.mp3");
-//        for (String i: list) {
-//            System.err.println(i);
-//        }
-//        try {
-//            String text = BaiduVoice.audioToText("d:\\tmp\\audio_0.pcm");
-//            System.out.println(text);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-//            boolean result = new VideoUtil().copyFile("d:\\tmp\\1.mp4",
-//                    "d:\\tmp\\11.mp4", true);
-//            System.err.println(result);
-
-    }
 }

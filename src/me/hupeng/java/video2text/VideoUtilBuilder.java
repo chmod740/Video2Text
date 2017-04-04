@@ -38,7 +38,7 @@ public class VideoUtilBuilder {
     /**
      * 返回实例对象
      * */
-    public VideoUtil create(){
+    public VideoUtil build(){
         return videoUtil;
     }
 }

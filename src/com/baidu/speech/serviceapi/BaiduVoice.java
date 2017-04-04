@@ -12,6 +12,8 @@ import java.net.URL;
 
 import javax.xml.bind.DatatypeConverter;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.json.JSONObject;
 
 public class BaiduVoice {
@@ -66,7 +68,14 @@ public class BaiduVoice {
     public static String audioToText(String inFile) throws Exception{
         testFileName = inFile;
         getToken();
-        return method1();
+        String data = method1();
+        JsonParser parse =new JsonParser();
+        JsonObject json=(JsonObject) parse.parse(data);
+        if (json.get("err_no").getAsInt() == 0){
+            return json.get("result").getAsJsonArray().get(0).getAsString();
+        }else {
+            return null;
+        }
     }
 
     private static String method2() throws Exception {
