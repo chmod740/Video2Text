@@ -33,22 +33,32 @@ public class VideoUtil{
      * */
     private String tempDir = "D:\\tmp\\";
 
-
-
     /**
      * 默认构造函数
      * */
     public VideoUtil(){}
 
-
+    /**
+     * ffmpeg的bin目录
+     * */
     public void setFfmpegPath(String ffmpegPath){
         this.ffmpegPath = ffmpegPath;
     }
 
+    /**
+     * 设置音频文件的切片长度
+     * @param videoSplitLength
+     *              按照长度将音频文件切片
+     * */
     public void setVideoSplitLength(int videoSplitLength){
         this.videoSplitLength = videoSplitLength;
     }
 
+    /**
+     * 设置临时目录的文件夹，如果此文件夹不存在，则创建它
+     * @param tempDir
+     *              临时文件的目录名称
+     * */
     public void setTempDir(String tempDir){
         tempDir.replace("/", "\\");
         File file = new File(tempDir);
@@ -57,8 +67,13 @@ public class VideoUtil{
         }
         this.tempDir =  tempDir.endsWith("\\")? tempDir: tempDir + "\\";
     }
+
     /**
      * 运行命令行，并返回结果
+     * @param cmd
+     *              需要执行的命令，例如 whoami
+     * @return
+     *              命令的返回值
      * */
     private List<String> runShell(String cmd){
         Process process = null;
@@ -92,19 +107,20 @@ public class VideoUtil{
         return null;
     }
 
-
     /**
      * 利用ffmpeg将视频文件转化成音频文件
-     * @param inFile        视频文件的名称
-     * @param outFile       输出文件的名称
-     * @return true         转换成功
-     *          false        转换失败
+     * @param inFile
+     *                  视频文件的名称
+     * @param outFile
+     *                  输出文件的名称
+     * @return
+     *                  true：转换成功
+     *                  false：转换失败
      * */
     private boolean convertVideoToMP3Audio(String inFile, String outFile){
         convertVideoToMP3Audio("d:\\tmp", inFile,outFile);
         return false;
     }
-
 
     /**
      * 复制单个文件
@@ -175,7 +191,18 @@ public class VideoUtil{
         }
     }
 
-
+    /**
+     * 将视频转换成MP3格式的音频文件
+     * @param dir
+     *              输入输出文件的目录
+     * @param inFile
+     *              输入文件的文件名
+     * @param outFile
+     *              输出文件的文件名
+     * @return
+     *              true：转换成功
+     *              false：转换失败
+     * */
     private boolean convertVideoToMP3Audio(String dir, String inFile, String outFile){
         File file = new File(dir);
         if (!file.exists()){
@@ -200,6 +227,10 @@ public class VideoUtil{
     /**
      * 对于视频文件进行分割
      * .\ffmpeg.exe  -ss 0 -i d:\tmp\1.mp3 -t 60  -f s16be -ar 8000 -acodec pcm_s16be -vn  -ac 1 d:\tmp\audio_1.pcm
+     * @param inFile
+     *              输入文件的文件名
+     * @param dir
+     *              输入输出文件的的文件夹
      * */
     private List<String> videoOrAudioSplit(String dir,String inFile){
         //TODO:
@@ -252,16 +283,16 @@ public class VideoUtil{
                 ".pcm -y"
         );
 //        System.err.println("start:" + ((videoTime-1)/videoSplitLength)*videoSplitLength + " end:" + videoTime);
-        String shell = "";
         return list;
     }
 
 
-
     /**
      * 获取视频总时间
-     * @param videoPath    视频路径
+     * @param videoPath
+     *              视频路径
      * @return
+     *              这个视频文件的播放时间
      */
     private int getVideoOrAudioTime(String videoPath) {
         List<String> commands = new java.util.ArrayList<String>();
@@ -298,8 +329,10 @@ public class VideoUtil{
     }
 
     /**
-     * @param timelen   格式:"00:00:10.68"
-     * @return          返回结果为其int值
+     * @param timelen
+     *              格式:"00:00:10.68"
+     * @return
+     *              输入的值的格式化整型值
      * */
     private int getTimelen(String timelen){
         int min=0;
