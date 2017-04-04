@@ -66,7 +66,7 @@ public class BaiduVoice {
     public static String audioToText(String inFile) throws Exception{
         testFileName = inFile;
         getToken();
-        return method2();
+        return method1();
     }
 
     private static String method2() throws Exception {

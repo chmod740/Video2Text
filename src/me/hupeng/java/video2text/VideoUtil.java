@@ -224,16 +224,16 @@ public class VideoUtil{
 
 
     public static void main(String[] args){
-//       List<String> list  = new VideoUtil().videoOrAudioSplit("d:\\tmp\\","2.mp3");
-//        for (String i: list) {
-//            System.err.println(i);
-//        }
+        new VideoUtil().convertVideoToMP3Audio("4.mp4","4.mp3");
+       List<String> list  = new VideoUtil().videoOrAudioSplit("d:\\tmp\\","4.mp3");
+        for (String i: list) {
+            System.err.println(i);
+        }
         try {
-            String text = BaiduVoice.audioToText("d:\\tmp\\audio_12.pcm");
+            String text = BaiduVoice.audioToText("d:\\tmp\\audio_0.pcm");
             System.out.println(text);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 }
-
