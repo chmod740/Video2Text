@@ -3,7 +3,10 @@ package me.hupeng.java.video2text;
 import com.baidu.speech.serviceapi.BaiduVoice;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +29,13 @@ public class VideoUtil{
     private int videoSplitLength = 60;
 
     /**
+     * 默认的临时目录
+     * */
+    private String tempDir = "D:\\tmp\\";
+
+
+
+    /**
      * 默认构造函数
      * */
     public VideoUtil(){}
@@ -39,6 +49,10 @@ public class VideoUtil{
         this.videoSplitLength = videoSplitLength;
     }
 
+    public void setTempDir(String tempDir){
+        tempDir.replace("/", "\\");
+        this.tempDir =  tempDir.endsWith("\\")? tempDir: tempDir + "\\";
+    }
     /**
      * 运行命令行，并返回结果
      * */
@@ -64,6 +78,8 @@ public class VideoUtil{
 
     public String videoToText(String videoPath) {
         //TODO:
+        File sourceFile = new File(videoPath);
+
 
         return null;
     }
@@ -81,6 +97,35 @@ public class VideoUtil{
         return false;
     }
 
+
+    /**
+     *
+     * */
+    public static long forChannel(File sourceFile,File targetFile) throws Exception{
+        long time=new Date().getTime();
+        int length=2097152;
+        FileInputStream in=new FileInputStream(sourceFile);
+        FileOutputStream out=new FileOutputStream(targetFile);
+        FileChannel inC=in.getChannel();
+        FileChannel outC=out.getChannel();
+        ByteBuffer b=null;
+        while(true){
+            if(inC.position()==inC.size()){
+                inC.close();
+                outC.close();
+                return new Date().getTime()-time;
+            }
+            if((inC.size()-inC.position())<length){
+                length=(int)(inC.size()-inC.position());
+            }else
+                length=2097152;
+            b=ByteBuffer.allocateDirect(length);
+            inC.read(b);
+            b.flip();
+            outC.write(b);
+            outC.force(false);
+        }
+    }
 
     private boolean convertVideoToMP3Audio(String dir, String inFile, String outFile){
         File file = new File(dir);
@@ -204,8 +249,8 @@ public class VideoUtil{
     }
 
     /**
-     * 格式:"00:00:10.68"
-     *
+     * @param timelen   格式:"00:00:10.68"
+     * @return          返回结果为其int值
      * */
     private int getTimelen(String timelen){
         int min=0;
