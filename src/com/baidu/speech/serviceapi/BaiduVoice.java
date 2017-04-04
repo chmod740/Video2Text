@@ -14,7 +14,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.json.JSONObject;
 
-public class Sample {
+public class BaiduVoice {
 
     private static final String serverURL = "http://vop.baidu.com/server_api";
     private static String token = "";
@@ -24,11 +24,7 @@ public class Sample {
     private static final String secretKey = "544de4f95f40ef2bea16a85d474226d0";
     private static final String cuid = "test";
 
-    public static void main(String[] args) throws Exception {
-        getToken();
-//        method1();
 
-    }
 
     private static void getToken() throws Exception {
         String getTokenURL = "https://openapi.baidu.com/oauth/2.0/token?grant_type=client_credentials" + 
@@ -37,7 +33,7 @@ public class Sample {
         token = new JSONObject(printResponse(conn)).getString("access_token");
     }
 
-    private static void method1() throws Exception {
+    private static String method1() throws Exception {
         File pcmFile = new File(testFileName);
         HttpURLConnection conn = (HttpURLConnection) new URL(serverURL).openConnection();
 
@@ -64,14 +60,16 @@ public class Sample {
         wr.flush();
         wr.close();
 
-        printResponse(conn);
+        return printResponse(conn);
     }
 
-    public static void audioToText(String inFile) throws Exception{
+    public static String audioToText(String inFile) throws Exception{
         testFileName = inFile;
+        getToken();
+        return method2();
     }
 
-    public static void method2() throws Exception {
+    private static String method2() throws Exception {
         File pcmFile = new File(testFileName);
         HttpURLConnection conn = (HttpURLConnection) new URL(serverURL
                 + "?cuid=" + cuid + "&token=" + token).openConnection();
@@ -89,13 +87,13 @@ public class Sample {
         wr.flush();
         wr.close();
 
-        printResponse(conn);
+        return printResponse(conn);
     }
 
     private static String printResponse(HttpURLConnection conn) throws Exception {
         if (conn.getResponseCode() != 200) {
             // request error
-            return "";
+            return null;
         }
         InputStream is = conn.getInputStream();
         BufferedReader rd = new BufferedReader(new InputStreamReader(is));
@@ -106,7 +104,7 @@ public class Sample {
             response.append('\r');
         }
         rd.close();
-        System.out.println(new JSONObject(response.toString()).toString(4));
+//        System.out.println(new JSONObject(response.toString()).toString(4));
         return response.toString();
     }
 
