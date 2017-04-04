@@ -42,15 +42,17 @@ public class VideoUtil{
      * 利用ffmpeg将视频文件转化成音频文件
      * @param videoPath     视频文件的路径
      * */
-    private void convertVideoToAudio(String videoPath){
+    private boolean convertVideoToAudio(String videoPath){
         File file = new File("tmp");
         if (!file.exists()){
             file.mkdir();
         }
         List<String> list = runShell("./ffmpeg/bin/ffmpeg.exe -i " + videoPath + "  -f s16be -ar 8000 -acodec pcm_s16be -vn  -ac 1 .\\tmp\\audio.pcm");
-        for(String s: list){
-            System.out.println(s);
-        }
+//        for(String s: list){
+//            System.out.println(s);
+//        }
+        file = new File("./tmp/audio.pcm");
+        return file.exists();
     }
 
     public static void main(String[] args){
