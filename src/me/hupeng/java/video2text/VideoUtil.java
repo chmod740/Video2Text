@@ -95,6 +95,11 @@ public class VideoUtil{
         return processList;
     }
 
+    /**
+     * 将视频识别成文本
+     * @param videoPath
+     *              需要转化的视频的路径
+     * */
     public String videoToText(String videoPath) {
         //TODO:
         // 复制到临时目录下
@@ -103,7 +108,20 @@ public class VideoUtil{
         if (!result){
             return null;
         }
-        convertVideoToMP3Audio("video.mp4","4.mp3");
+        result = convertVideoToMP3Audio("video.mp4","audio.mp3");
+        if (!result){
+            return null;
+        }
+        List<String> list  = new VideoUtil().videoOrAudioSplit(tempDir, "audio.mp3");
+        for (String i: list) {
+            System.err.println(i);
+            try {
+                String text = BaiduVoice.audioToText(i);
+                System.out.println(text);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 
@@ -118,7 +136,7 @@ public class VideoUtil{
      *                  false：转换失败
      * */
     private boolean convertVideoToMP3Audio(String inFile, String outFile){
-        convertVideoToMP3Audio("d:\\tmp", inFile,outFile);
+        convertVideoToMP3Audio(tempDir, inFile,outFile);
         return false;
     }
 
@@ -265,7 +283,7 @@ public class VideoUtil{
                     ".pcm -y"
             );
 //            System.err.println("start:" + i + " end:" + (i + videoSplitLength));
-            list.add("d:\\tmp\\audio_" + j + ".pcm");
+            list.add(tempDir + "audio_" + j + ".pcm");
         }
         runShell("cmd /c "+
                 ffmpegPath +
@@ -363,8 +381,9 @@ public class VideoUtil{
 //            e.printStackTrace();
 //        }
 
-            boolean result = new VideoUtil().copyFile("d:\\tmp\\1.mp4",
-                    "d:\\tmp\\11.mp4", true);
-            System.err.println(result);
+//            boolean result = new VideoUtil().copyFile("d:\\tmp\\1.mp4",
+//                    "d:\\tmp\\11.mp4", true);
+//            System.err.println(result);
+
     }
 }
