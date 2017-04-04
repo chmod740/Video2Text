@@ -18,7 +18,7 @@ public class Sample {
 
     private static final String serverURL = "http://vop.baidu.com/server_api";
     private static String token = "";
-    private static final String testFileName = "8.WAV";
+    private static String testFileName = "8.WAV";
     //put your own params here
     private static final String apiKey = "hQ3vVumokB98jMm8WFzgYrYq";
     private static final String secretKey = "544de4f95f40ef2bea16a85d474226d0";
@@ -26,8 +26,8 @@ public class Sample {
 
     public static void main(String[] args) throws Exception {
         getToken();
-        method1();
-        method2();
+//        method1();
+
     }
 
     private static void getToken() throws Exception {
@@ -67,7 +67,11 @@ public class Sample {
         printResponse(conn);
     }
 
-    private static void method2() throws Exception {
+    public static void audioToText(String inFile) throws Exception{
+        testFileName = inFile;
+    }
+
+    public static void method2() throws Exception {
         File pcmFile = new File(testFileName);
         HttpURLConnection conn = (HttpURLConnection) new URL(serverURL
                 + "?cuid=" + cuid + "&token=" + token).openConnection();
