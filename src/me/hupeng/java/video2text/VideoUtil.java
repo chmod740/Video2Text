@@ -133,7 +133,7 @@ public class VideoUtil{
                     inFile +
                     " -t " +
                     videoSplitLength +
-                    "  -f s16be -ar 8000 -acodec pcm_s16be -vn  -ac 1 " +
+                    "  -f wav -ar 8000  -vn  -ac 1 " +
                     dir +
                     "audio_" +
                     j +
@@ -151,7 +151,7 @@ public class VideoUtil{
                 inFile +
                 " -t " +
                 videoSplitLength +
-                "  -f s16be -ar 8000 -acodec pcm_s16be -vn  -ac 1 " +
+                "  -f wav -ar 8000 -vn  -ac 1 " +
                 dir +
                 "audio_" +
                 j +
