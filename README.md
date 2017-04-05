@@ -3,7 +3,7 @@
 ### 可广泛应用于各种视频（包括电视剧，电影）的字幕文件的生成
 ## 项目成员：
 #### 负责人：[hupeng](https://github.com/imu-hupeng)
-#### 参与者:[yangyang](https://github.com/IMUDGES-YY)
+#### 参与者：[yangyang](https://github.com/IMUDGES-YY)
 ## 开源协议：
 #### MIT License
 ## 项目开始日期：
